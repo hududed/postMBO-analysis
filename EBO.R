@@ -19,7 +19,7 @@ paramsMBO = data.table::data.table(
   design = list("maximinLHS","randomLHS", "random"),
   amountDesign = list(12),
   control = list(ctrl),
-  surrogate = list(mlr::makeLearner("regr.km", predict.type = "se"))
+  surrogate = list(mlr::makSeLearner("regr.km", predict.type = "se"))
 )
 
 # define names
@@ -35,7 +35,7 @@ dat = as.data.frame(read.csv("ML.csv"))
 df = subset(dat, select = -c(gas,estimated,estimatedUpper,EI))
 
 
-# define parameter spce
+# define parameter space
 psOpt = ParamHelpers::makeParamSet(
   ParamHelpers::makeIntegerParam("power", lower = 10, upper = 5555),
   ParamHelpers::makeIntegerParam("time", lower = 500, upper = 20210),
@@ -52,4 +52,10 @@ task_Kapton = EBO::task(
 # generate Data
 kaptConfigResults = EBO::generateConfigdata(task_Kapton, funcEvals = funcEvals, paramsMBO,
                                             namesBoxplot = namesBoxplot, repls = 20)
+
 testConfigs(kaptConfigResults)
+
+boxplotCurve(kaptConfigResults)
+
+testAddIters(kaptConfigResults, baseIters = 20, addIters = 10, minimize = FALSE)
+
